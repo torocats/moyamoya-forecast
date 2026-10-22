@@ -1,0 +1,281 @@
+<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; base-uri 'none'; form-action 'none'">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moyamoya Forecast</title>
+<style>
+:root{--sky1:#1b2347;--sky2:#3a3f7a;--text:#eef0ff;--muted:#b3b9e0;--gold:#ffd98a;--card:rgba(255,255,255,.10);--line:rgba(255,255,255,.16);--stars:1;--moon:1}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;color:var(--text);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP","Segoe UI",sans-serif;background:linear-gradient(180deg,var(--sky1),var(--sky2)) fixed;line-height:1.6;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+.sky{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:calc(var(--stars)*.8);animation:tw 3.5s ease-in-out infinite}
+@keyframes tw{50%{transform:scale(.4);opacity:calc(var(--stars)*.25)}}
+.moon{position:absolute;top:70px;right:6vw;font-size:40px;opacity:var(--moon);filter:drop-shadow(0 0 14px rgba(255,217,138,.5))}
+.rain{position:absolute;inset:0;opacity:0;transition:opacity .6s}
+.drop{position:absolute;top:-30px;width:1.5px;height:18px;background:linear-gradient(transparent,rgba(190,210,255,.8));animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh)}}
+header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;max-width:1000px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;letter-spacing:.5px}
+.brand span.i{font-size:24px}
+.lang{display:flex;background:rgba(255,255,255,.12);border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;padding:5px 12px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted)}
+.lang button[aria-pressed=true]{background:var(--gold);color:#1b2347}
+main{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:4px 16px 40px;display:grid;gap:16px}
+@media(min-width:820px){main{grid-template-columns:1.05fr 1fr;align-items:start}}
+.col{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 8px 28px rgba(5,8,30,.25)}
+h2{margin:0 0 10px;font-size:15px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.hero{text-align:center;padding:22px 18px 20px}
+.emoji{font-size:92px;line-height:1.1;margin:10px 0 4px;animation:fl 5s ease-in-out infinite;filter:drop-shadow(0 6px 14px rgba(0,0,0,.3))}
+@keyframes fl{50%{transform:translateY(-6px)}}
+.label{font-size:20px;font-weight:800;min-height:32px}
+.slidewrap{display:flex;align-items:center;gap:12px;margin:22px 4px 6px;font-size:24px}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:12px;border-radius:8px;background:linear-gradient(90deg,#ffd98a,#8fa6e0 55%,#5b628f);outline-offset:6px;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:var(--gold);border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--gold);border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.hint{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:14px}
+.chip[aria-pressed=true]{background:rgba(255,217,138,.22);border-color:var(--gold);color:#fff3d2}
+.caster .row{display:flex;gap:12px;align-items:flex-start}
+.avatar{flex:none;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ffd98a,#f2a8c4);display:grid;place-items:center;font-size:24px}
+.who{font-size:12px;color:var(--muted);margin-bottom:4px}
+.bubble{background:rgba(255,255,255,.14);border-radius:4px 18px 18px 18px;padding:14px 16px;font-size:15.5px;line-height:1.75;animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:translateY(5px)}}
+.tip{margin-top:8px;font-size:13.5px;color:#ffe6b0}
+.tom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:14px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.1);padding:8px 14px;border-radius:12px;cursor:pointer;font-size:13.5px}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn.main{background:var(--gold);color:#1b2347;font-weight:800;border:0;padding:12px 16px;font-size:15px;width:100%}
+.btn.main:hover{background:#ffe5ad}
+input[type=text]{width:100%;background:rgba(10,14,40,.4);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:12px;color:var(--text)}
+input[type=text]::placeholder{color:#8d94c4}
+.status{min-height:22px;margin:10px 0 0;font-size:13.5px;color:var(--gold)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:14px;padding:8px 0 6px;text-align:center;cursor:pointer;min-width:0}
+.day .e{font-size:24px;line-height:1.3}
+.day .w{font-size:11px;color:var(--muted)}
+.day.sel{border-color:var(--gold);background:rgba(255,217,138,.16)}
+.day.draft{border-style:dashed}
+.day.none .e{opacity:.35}
+.detail{margin-top:12px;background:rgba(10,14,40,.35);border-radius:14px;padding:12px 14px;font-size:14px;min-height:64px}
+.detail b{display:block;margin-bottom:2px}
+.trend{margin-top:12px;font-size:14px;color:#ffe6b0}
+.foot{display:flex;justify-content:flex-end;margin-top:12px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"><div id="stars"></div><div class="moon">🌙</div><div class="rain" id="rain"></div></div>
+<header>
+  <div class="brand"><span class="i">☁️</span><span>Moyamoya Forecast</span></div>
+  <div class="lang" data-demo="lang-switch" role="group" data-i18n-aria="langAria">
+    <button type="button" id="bJa" data-demo="lang-ja">日本語</button>
+    <button type="button" id="bEn" data-demo="lang-en">EN</button>
+  </div>
+</header>
+<main>
+  <div class="col">
+    <section class="card hero" data-demo="forecast-card">
+      <h2 data-i18n="caption">今夜の心の天気</h2>
+      <div class="emoji" id="wEmoji" aria-hidden="true">⛅</div>
+      <div class="label" id="wLabel" data-demo="weather-label" aria-live="polite"></div>
+      <div class="slidewrap">
+        <span aria-hidden="true">☀️</span>
+        <input type="range" id="knob" min="0" max="100" value="55" data-demo="mood-slider" data-i18n-aria="sliderAria">
+        <span aria-hidden="true">⛈️</span>
+      </div>
+      <p class="hint" data-i18n="hint"></p>
+    </section>
+    <section class="card">
+      <h2 data-i18n="tagsTitle"></h2>
+      <div class="chips" id="chips"></div>
+    </section>
+    <section class="card caster" data-demo="caster-card">
+      <h2 data-i18n="casterTitle"></h2>
+      <div class="row">
+        <div class="avatar" aria-hidden="true">🎙️</div>
+        <div style="flex:1;min-width:0">
+          <div class="who" data-i18n="casterName"></div>
+          <div class="bubble" id="bubble" data-demo="caster-comment" aria-live="polite"></div>
+          <div class="tip" id="tip"></div>
+        </div>
+      </div>
+      <div class="tom">
+        <span id="tomorrow" data-demo="tomorrow-forecast"></span>
+        <button type="button" class="btn" id="another" data-demo="next-comment" data-i18n="another"></button>
+      </div>
+    </section>
+  </div>
+  <div class="col">
+    <section class="card">
+      <h2 data-i18n="recordTitle"></h2>
+      <input type="text" id="note" maxlength="60" data-demo="note-input" data-i18n-ph="notePh" data-i18n-aria="noteAria">
+      <button type="button" class="btn main" id="save" data-demo="save-forecast" data-i18n="save"></button>
+      <p class="status" id="status" role="status" data-demo="save-status"></p>
+    </section>
+    <section class="card" data-demo="week-card">
+      <h2 data-i18n="weekTitle"></h2>
+      <div class="week" id="week"></div>
+      <div class="detail" id="detail" data-demo="day-detail" aria-live="polite"></div>
+      <div class="trend" id="trend" data-demo="trend"></div>
+      <div class="foot"><button type="button" class="btn" id="reset" data-demo="reset-records" data-i18n="reset"></button></div>
+    </section>
+  </div>
+</main>
+<script>
+const I18N={
+ja:{
+title:"Moyamoya Forecast｜モヤモヤ天気予報",
+langAria:"言語切り替え",caption:"今夜の心の天気",hint:"つまみを動かして、今の気分に心の天気をあわせましょう",
+sliderAria:"心の天気のつまみ（左が晴れ、右が雷雨）",
+tagsTitle:"モヤモヤのもとは？（えらばなくてもOK）",
+tags:{work:"💼 仕事",study:"📚 勉強",people:"👥 人間関係",sleep:"😪 寝不足",vague:"🌫️ なんとなく"},
+casterTitle:"お天気キャスターの一言",casterName:"夜のお天気キャスター・ヨルミ",another:"別の一言 🔁",
+tomorrow:"明日の予報",tomSame:"明日も穏やかな晴れ",tomBetter:"のち{s}（今夜より少しやわらぎます）",
+recordTitle:"今夜の予報を記録",notePh:"ひとこと（任意）例：会議が長引いた",noteAria:"ひとことメモ",save:"🌙 今夜の予報を記録",
+saved:"記録しました。おつかれさまでした。",updated:"今夜の記録を更新しました。",
+weekTitle:"この1週間の心の天気",tonight:"今夜",
+none:"この日の記録はありません。",noneToday:"今夜はまだ記録していません。上のボタンで残せます。",
+trendNone:"記録が3日分たまると、心の天気の流れをお伝えします。",
+trendUp:"📈 ここ数日、少しずつ晴れ間が増えています。",trendDown:"🌧️ 最近は雲が厚めです。休める日をつくってあげてくださいね。",trendFlat:"☁️ 心の天気は落ち着いた流れです。",
+reset:"記録をリセット",resetDone:"サンプルの記録に戻しました。",
+wd:["日","月","火","水","木","金","土"],
+labels:["心は快晴","おおむね晴れ","ところにより小さなモヤモヤ","ちょっとモヤモヤ","心に小雨","しっとり雨もよう","心に雷雨"],
+short:["晴れ","おおむね晴れ","くもり時々晴れ","くもり","小雨","雨","雷雨"],
+cm:[
+["今夜の心は雲ひとつない快晴です。この穏やかさを抱えて、ぐっすりどうぞ。","星がよく見えそうな、すっきり晴れの夜です。今日のがんばりに拍手を。","気持ちの空は晴れ渡っています。明日の自分のために、早めのおやすみを。"],
+["薄い雲はありますが、おおむね晴れ。深呼吸でさらに澄んでいきますよ。","おだやかな空もよう。温かいお茶を一杯どうでしょう。","少し雲はあるものの、心地よい夜です。画面を閉じて、ゆっくりしましょう。"],
+["ところにより小さなモヤモヤが流れています。すぐ晴れ間がのぞくので心配いりません。","小さな雲が通過中です。肩の力を抜いて、ゆっくり息をはきましょう。","今日の疲れが雲になっているようです。軽いストレッチで流してしまいましょう。"],
+["ちょっとモヤモヤ、くもり空です。無理に晴らさず、ゆっくりめにいきましょう。","今夜は雲が厚めです。考えごとは明日の朝に回してもだいじょうぶ。","くもりのち回復の見込みです。温かい飲み物を片手に、一息つきましょう。"],
+["今夜は心に小雨の予報です。温かい飲み物を片手に、早めの休憩がおすすめですよ。","しとしと小雨もよう。傘をさすように、自分にやさしくしてあげてくださいね。","小雨が降っています。今日はもう、がんばらなくて大丈夫ですよ。"],
+["しっとり雨もよう。ぜんぶ抱えず、雨に流してしまいましょう。今夜は早めにお布団へ。","雨雲が広がっています。紙に書き出すと、雲が少し軽くなりますよ。","今日はよくがんばりました。雨の音をBGMに、ゆっくり目を閉じましょう。"],
+["心に雷雨の予報です。でも、どんな嵐も夜明けには通り過ぎます。まずは深呼吸を。","かなりの荒れもようです。今夜は考えごとをお休みして、ゆっくり温まりましょう。","嵐の中、よく耐えましたね。屋根の下でぬくぬく休んでください。明日は必ず空が変わります。"]],
+tips:{work:"💼 お仕事の雲は、明日の自分にあずけてOK。",study:"📚 勉強はここまで。眠っている間に、頭が整理してくれますよ。",people:"👥 人の言葉は、夜にはいつも大きく聞こえるもの。朝になれば小さくなります。",sleep:"😪 今夜は予定を足さず、いつもより30分早く眠りましょう。",vague:"🌫️ 理由のないモヤモヤも、ちゃんと天気のひとつです。"},
+seed:["週のはじまり、わりと元気。","テスト勉強がはかどらず…","会議が長引いてぐったり。","同僚の一言が気になった。","散歩したら少し軽くなった。","寝不足で頭が重い。"],
+tagWord:"原因"},
+en:{
+title:"Moyamoya Forecast",
+langAria:"Language",caption:"Tonight's heart weather",hint:"Move the knob to match the weather inside your heart.",
+sliderAria:"Heart weather knob (left is sunny, right is stormy)",
+tagsTitle:"What's behind the clouds? (optional)",
+tags:{work:"💼 Work",study:"📚 Study",people:"👥 People",sleep:"😪 Little sleep",vague:"🌫️ Not sure"},
+casterTitle:"A word from the weather caster",casterName:"Yorumi, your night-time weather caster",another:"Another word 🔁",
+tomorrow:"Tomorrow",tomSame:"Calm and sunny again tomorrow",tomBetter:"Then {s}, a little brighter than tonight",
+recordTitle:"Save tonight's forecast",notePh:"A short note (optional), e.g. a long meeting",noteAria:"Short note",save:"🌙 Save tonight's forecast",
+saved:"Saved. Good work today.",updated:"Tonight's entry was updated.",
+weekTitle:"Your heart weather this week",tonight:"Tonight",
+none:"No entry for this day.",noneToday:"Nothing saved for tonight yet. Use the button above.",
+trendNone:"Save 3 days and I'll show you how your weather is flowing.",
+trendUp:"📈 Over the last few days, more clear patches are appearing.",trendDown:"🌧️ Clouds have been thick lately. Try to make room for rest.",trendFlat:"☁️ Your heart weather has been steady.",
+reset:"Reset entries",resetDone:"Back to the sample entries.",
+wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+labels:["Clear skies in my heart","Mostly sunny","A few small clouds","A little cloudy","Light rain in my heart","Steady rain","Thunderstorm"],
+short:["sunny","mostly sunny","partly cloudy","cloudy","light showers","showers","rain"],
+cm:[
+["Your heart is clear tonight, without a single cloud. Carry this calm to bed.","A clear night for stargazing. Give yourself a round of applause for today.","The sky inside you is wide open. Rest early for tomorrow's you."],
+["A few thin clouds, but mostly sunny. A deep breath will clear them more.","A gentle sky tonight. How about a cup of warm tea?","Just a little cloud, and a lovely night. Put the screen away and slow down."],
+["Small worries are drifting by here and there. Sunny spells are coming soon.","A little cloud is passing through. Drop your shoulders and breathe out slowly.","Today's tiredness looks like clouds. A light stretch will wash them away."],
+["A bit cloudy and a bit moyamoya. No need to force it clear. Take it slowly.","The clouds are thick tonight. Your thoughts can wait until morning.","Cloudy, then clearing up. Take a breath with a warm drink in hand."],
+["Light rain is forecast in your heart tonight. A warm drink and an early break are recommended.","A soft drizzle tonight. Be as kind to yourself as an umbrella would be.","It's drizzling. You don't have to try any harder today."],
+["Steady rain tonight. Don't carry it all. Let the rain wash it away, and head to bed early.","Rain clouds are spreading. Writing things down on paper makes them lighter.","You did so well today. Let the sound of rain be your music and close your eyes."],
+["A thunderstorm is forecast in your heart. Every storm passes by dawn. Start with a deep breath.","It's quite stormy. Give your thoughts a night off and warm up slowly.","You made it through the storm. Rest cozy under your roof. The sky will change tomorrow."]],
+tips:{work:"💼 Leave work's clouds for tomorrow's you.",study:"📚 That's enough studying. Your brain will sort it out while you sleep.",people:"👥 Other people's words sound louder at night. By morning they'll be smaller.",sleep:"😪 Add no plans tonight, and sleep 30 minutes earlier than usual.",vague:"🌫️ Moyamoya with no reason is still a kind of weather."},
+seed:["Calm start to the week.","Study session didn't go well...","A long meeting wore me out.","A coworker's comment stuck with me.","A walk lightened my mood.","Short on sleep; my head is heavy."],
+tagWord:"Cause"}
+};
+const EM=["☀️","🌤️","⛅","🌥️","🌦️","🌧️","⛈️"];
+const SKY=[[0,[29,47,107],[79,111,184]],[.55,[27,35,71],[58,63,122]],[1,[18,21,42],[38,43,72]]];
+const TAGS=["work","study","people","sleep","vague"];
+let lang="en",v=55,tag=null,ci=0,hist={},sel=null;
+const $=id=>document.getElementById(id);
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,x){try{localStorage.setItem(k,x)}catch(e){}}
+function t(k){return I18N[lang][k]}
+function stage(x){return Math.min(6,Math.floor(x/14.3))}
+function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function ago(n){const d=new Date();d.setDate(d.getDate()-n);return d}
+const todayK=key(new Date());
+function seeds(){const vs=[18,42,78,52,34,64],tg=[null,"study","work","people","vague","sleep"],o={};
+ vs.forEach((x,i)=>{const k=key(ago(6-i));o[k]={d:k,v:x,tag:tg[i],nk:i}});return o}
+function load(){let h=null;try{h=JSON.parse(lsGet("mmf_hist"))}catch(e){}
+ hist=(h&&typeof h==="object"&&!Array.isArray(h))?h:seeds()}
+function persist(){lsSet("mmf_hist",JSON.stringify(hist))}
+function mix(a,b,f){return a.map((x,i)=>Math.round(x+(b[i]-x)*f))}
+function paintSky(){const p=v/100;let i=p<.55?0:1;const a=SKY[i],b=SKY[i+1],f=(p-a[0])/(b[0]-a[0]);
+ const s=document.documentElement.style;
+ s.setProperty("--sky1","rgb("+mix(a[1],b[1],f)+")");s.setProperty("--sky2","rgb("+mix(a[2],b[2],f)+")");
+ s.setProperty("--stars",Math.max(.15,1-p*.9).toFixed(2));s.setProperty("--moon",Math.max(.2,1-p*.85).toFixed(2));
+ const st=stage(v);$("rain").style.opacity=[0,0,0,0,.35,.6,.9][st]}
+function renderForecast(){const st=stage(v),L=I18N[lang];
+ $("wEmoji").textContent=EM[st];$("wLabel").textContent=L.labels[st];
+ $("knob").setAttribute("aria-valuetext",L.labels[st]);
+ $("bubble").textContent=L.cm[st][ci%3];
+ $("tip").textContent=tag?L.tips[tag]:"";
+ let tm;if(v<20)tm=L.tomSame;else{const ts=stage(Math.round(v*.55));tm=L.tomBetter.replace("{s}",L.short[ts])+" "+EM[ts]}
+ $("tomorrow").textContent=L.tomorrow+(lang==="ja"?"：":": ")+tm;
+ paintSky();renderWeek()}
+function bump(){const b=$("bubble");b.style.animation="none";void b.offsetWidth;b.style.animation=""}
+function renderChips(){const c=$("chips");c.innerHTML="";
+ TAGS.forEach(k=>{const b=document.createElement("button");b.type="button";b.className="chip";b.dataset.demo="tag-"+k;
+  b.setAttribute("aria-pressed",String(tag===k));b.textContent=t("tags")[k];
+  b.onclick=()=>{tag=tag===k?null:k;renderChips();renderForecast();bump()};c.appendChild(b)})}
+function noteOf(e){return e.nk!=null?I18N[lang].seed[e.nk]:(e.note||"")}
+function renderWeek(){const L=I18N[lang],w=$("week");w.innerHTML="";
+ if(!sel)sel=todayK;
+ for(let i=6;i>=0;i--){const d=ago(i),k=key(d),e=hist[k],isT=k===todayK;
+  const b=document.createElement("button");b.type="button";b.dataset.demo="day-"+k;
+  b.className="day"+(k===sel?" sel":"")+(isT&&!e?" draft":"")+(!e&&!isT?" none":"");
+  const em=e?EM[stage(e.v)]:(isT?EM[stage(v)]:"・");
+  const e1=document.createElement("div");e1.className="e";e1.textContent=em;
+  const w1=document.createElement("div");w1.className="w";w1.textContent=isT?L.tonight:L.wd[d.getDay()];
+  b.append(e1,w1);b.setAttribute("aria-label",(d.getMonth()+1)+"/"+d.getDate()+" "+(e?L.labels[stage(e.v)]:L.none));
+  b.onclick=()=>{sel=k;renderWeek()};w.appendChild(b)}
+ const dt=$("detail");dt.innerHTML="";const e=hist[sel];
+ if(e){const d=new Date(sel+"T00:00:00"),h=document.createElement("b");
+  h.textContent=(d.getMonth()+1)+"/"+d.getDate()+" "+EM[stage(e.v)]+" "+L.labels[stage(e.v)];
+  const p=document.createElement("div");const n=noteOf(e);
+  p.textContent=(e.tag?L.tags[e.tag]+(n?" ・ ":""):"")+n;dt.append(h,p)}
+ else dt.textContent=sel===todayK?L.noneToday:L.none;
+ const arr=[];for(let i=6;i>=0;i--){const e2=hist[key(ago(i))];if(e2)arr.push(e2.v)}
+ let tr=L.trendNone;
+ if(arr.length>=3){const h=Math.floor(arr.length/2),av=a=>a.reduce((s,x)=>s+x,0)/a.length,df=av(arr.slice(-h))-av(arr.slice(0,h));
+  tr=df<-8?L.trendUp:df>8?L.trendDown:L.trendFlat}
+ $("trend").textContent=tr}
+function say(m){const s=$("status");s.textContent=m;clearTimeout(say.t);say.t=setTimeout(()=>{s.textContent=""},4000)}
+function setLang(l){lang=l;try{localStorage.setItem("lang",l)}catch(e){}
+ document.documentElement.lang=l;document.title=t("title");
+ document.querySelectorAll("[data-i18n]").forEach(n=>{n.textContent=t(n.dataset.i18n)});
+ document.querySelectorAll("[data-i18n-ph]").forEach(n=>{n.placeholder=t(n.dataset.i18nPh)});
+ document.querySelectorAll("[data-i18n-aria]").forEach(n=>{n.setAttribute("aria-label",t(n.dataset.i18nAria))});
+ $("bJa").setAttribute("aria-pressed",String(l==="ja"));$("bEn").setAttribute("aria-pressed",String(l==="en"));
+ renderChips();renderForecast()}
+function initLang(){let l=null;
+ try{if(window.APP_LANG==="ja"||window.APP_LANG==="en")l=window.APP_LANG}catch(e){}
+ if(!l){try{const q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="en")l=q}catch(e){}}
+ if(!l){const s=lsGet("lang");if(s==="ja"||s==="en")l=s}
+ return l||"en"}
+(function(){
+ const st=$("stars");for(let i=0;i<46;i++){const s=document.createElement("i");s.className="star";
+  s.style.left=Math.random()*100+"%";s.style.top=Math.random()*70+"%";s.style.animationDelay=(Math.random()*3.5)+"s";
+  const z=Math.random()<.2?4:3;s.style.width=s.style.height=z+"px";st.appendChild(s)}
+ const r=$("rain");for(let i=0;i<34;i++){const d=document.createElement("i");d.className="drop";
+  d.style.left=Math.random()*100+"%";d.style.animationDuration=(.9+Math.random()*.8)+"s";d.style.animationDelay=(-Math.random()*1.6)+"s";r.appendChild(d)}
+ load();
+ if(hist[todayK]){v=hist[todayK].v;tag=hist[todayK].tag||null;if(hist[todayK].note)$("note").value=hist[todayK].note}
+ $("knob").value=v;
+ $("knob").addEventListener("input",e=>{const o=stage(v);v=+e.target.value;if(stage(v)!==o){ci=0;bump()}renderForecast()});
+ $("another").onclick=()=>{ci++;renderForecast();bump()};
+ $("save").onclick=()=>{const had=!!hist[todayK],n=$("note").value.trim();
+  hist[todayK]={d:todayK,v:v,tag:tag,note:n};persist();sel=todayK;renderWeek();say(t(had?"updated":"saved"))};
+ $("reset").onclick=()=>{hist=seeds();try{localStorage.removeItem("mmf_hist")}catch(e){}sel=todayK;$("note").value="";renderWeek();say(t("resetDone"))};
+ $("bJa").onclick=()=>setLang("ja");$("bEn").onclick=()=>setLang("en");
+ setLang(initLang());
+})();
+</script>
+</body>
+</html>
